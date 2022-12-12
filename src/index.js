@@ -2,16 +2,49 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import "react-toastify/dist/ReactToastify.css";
+import firebaseConfig from './firebase.confige';
+import { createRoot } from "react-dom/client";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import Registation from './pages/registation/registation';
 
+import Login from './pages/login/login';
+import ForgetPassword from "./pages/forgetPassword/forgotPassword";
+import Home from './pages/home';
+import store from "./store";
+import { Provider } from "react-redux";
+import Message from './pages/message';
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home/>
+  },
+  {
+    path: "/registation",
+    element: <Registation/>,
+  },
+  {
+    path: "/login",
+    element: <Login/>,
+  },
+  {
+    path: "/forgetPassword",
+    element: <ForgetPassword/>,
+  },
+  {
+    path: "/message",
+    element: <Message/>,
+  },
+]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+    <RouterProvider router={router} />
+      
+    </Provider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
