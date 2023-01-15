@@ -31,7 +31,7 @@ const Home = () => {
       {verify ? (
         <>
           <div className="w-[180px] bg-primary h-screen max-h-[930px] rounded-3xl">
-            <SideBar />
+            <SideBar active="home"/>
           </div>
           <div className="w-[530px]">
             <Search />

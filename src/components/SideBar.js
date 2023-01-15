@@ -8,7 +8,7 @@ import {
 import { FaHome } from "react-icons/fa";
 import { BsFillChatDotsFill } from "react-icons/bs";
 import { getAuth, signOut, updateProfile } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
 import { userLoginInfo } from "../slices/userSlices";
 import Cropper from "react-cropper";
@@ -20,17 +20,17 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { FallingLines } from "react-loader-spinner";
-const SideBar = () => {
+const SideBar = ({active}) => {
   const auth = getAuth();
-  let [ modal, setModal ] = useState( false );
-    let [loading, setLoading] = useState(false);
-    const [image, setImage] = useState("");
+  let [modal, setModal] = useState(false);
+  let [loading, setLoading] = useState(false);
+  const [image, setImage] = useState("");
   const [cropData, setCropData] = useState("");
   const [cropper, setCropper] = useState("");
-  let navigate=useNavigate()
-  let dispatch = useDispatch()
-  let data = useSelector( ( state ) => state.userAllInfo.userInformaition );
-// console.log(data);
+  let navigate = useNavigate();
+  let dispatch = useDispatch();
+  let data = useSelector((state) => state.userAllInfo.userInformaition);
+  // console.log(data);
   let handleModalOpen = () => {
     setModal(true);
   };
@@ -43,9 +43,9 @@ const SideBar = () => {
   let handleLogout = () => {
     signOut(auth)
       .then(() => {
-        navigate( "/login" )
-        dispatch( userLoginInfo( null ) );
-        localStorage.removeItem("userInfoStore")
+        navigate("/login");
+        dispatch(userLoginInfo(null));
+        localStorage.removeItem("userInfoStore");
       })
       .catch((error) => {
         // An error happened.
@@ -76,12 +76,10 @@ const SideBar = () => {
     // Data URL string
     const message4 = cropper.getCroppedCanvas().toDataURL();
     uploadString(storageRef, message4, "data_url").then((snapshot) => {
-      getDownloadURL( storageRef ).then( ( downloadURL ) => {
-        
+      getDownloadURL(storageRef).then((downloadURL) => {
         updateProfile(auth.currentUser, {
           photoURL: downloadURL,
-          
-        } ).then( () => {
+        }).then(() => {
           setLoading(false);
           setModal(false);
           setImage("");
@@ -106,16 +104,36 @@ const SideBar = () => {
         {data.displayName}
       </h4>
       <div className="">
-        <div className="relative mt-24 z-[1] flex justify-center ">
-          <FaHome className="text-4xl text-primary" />
-          <div className="absolute w-[80%]  bg-white  top-[-13px] z-[-1] left-[36px] pt-10 py-6  rounded-l-2xl"></div>
-          <div className="absolute w-[13px]  bg-primary  top-[-13px] z-[-1] right-[0] pt-10 py-6 rounded-l-2xl"></div>
-        </div>
-        <div className="relative mt-24 z-[1] flex justify-center ">
-          <BsFillChatDotsFill className="text-4xl text-[#BAD1FF]" />
-          <div className="absolute w-[80%]  bg-none  top-[-13px] z-[-1] left-[36px] pt-10 py-6 rounded-l-2xl"></div>
-          <div className="absolute w-[13px]  bg-none  top-[-13px] z-[-1] right-[0] pt-10 py-6 rounded-l-2xl"></div>
-        </div>
+        <Link to="/">
+          <div className="relative mt-24 z-[1] flex justify-center ">
+            <FaHome
+              className={`text-4xl ${
+                active == "home" ? "text-primary" : "  text-[#BAD1FF]"
+              }`}
+            />
+            <div
+              className={`absolute w-[80%] ${
+                active == "home" ? " bg-white" : "bg-primary "
+              }  top-[-13px] z-[-1] left-[36px] pt-10 py-6  rounded-l-2xl `}
+            ></div>
+            <div className="absolute w-[13px]  bg-primary  top-[-13px] z-[-1] right-[0] pt-10 py-6 rounded-l-2xl"></div>
+          </div>
+        </Link>
+        <Link to="/message">
+          <div className="relative mt-24 z-[1] flex justify-center ">
+            <BsFillChatDotsFill
+              className={`text-4xl ${
+                active == "message" ? "text-primary" : "  text-[#BAD1FF]"
+              }`}
+            />
+            <div
+              className={`absolute w-[80%] ${
+                active == "message" ? " bg-white" : "bg-primary "
+              }  top-[-13px] z-[-1] left-[36px] pt-10 py-6  rounded-l-2xl `}
+            ></div>
+            <div className="absolute w-[13px]  bg-primary  top-[-13px] z-[-1] right-[0] pt-10 py-6 rounded-l-2xl"></div>
+          </div>
+        </Link>
         <div className="relative mt-24 z-[1] flex justify-center ">
           <MdNotifications className="text-4xl text-[#BAD1FF]" />
           <div className="absolute w-[80%]  bg-none  top-[-13px] z-[-1] left-[36px] pt-10 py-6 rounded-l-2xl"></div>

@@ -10,9 +10,9 @@ import {
   remove,
 } from "firebase/database";
 const BlockUser = () => {
+  const db = getDatabase();
   let data = useSelector((state) => state.userAllInfo.userInformaition);
   const [blocklist, setBlocklist] = useState([]);
-  const db = getDatabase();
   useEffect(() => {
     const starCountRef = ref(db, "block/");
     onValue(starCountRef, (snapshot) => {

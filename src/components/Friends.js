@@ -8,11 +8,14 @@ import {
   push,
   remove,
 } from "firebase/database";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { activeFriends } from "../slices/activeFriendSlices";
 const Friends = () => {
   const db = getDatabase();
   let [friend, setFriend] = useState([]);
-  let data = useSelector((state) => state.userAllInfo.userInformaition);
+  let data = useSelector( ( state ) => state.userAllInfo.userInformaition );
+  let dispatch = useDispatch();
+
   useEffect(() => {
     const friendsRef = ref(db, "friends/");
     onValue(friendsRef, (snapshot) => {
@@ -37,18 +40,37 @@ const Friends = () => {
         blockId: item.receiverId,
         blockby: item.senderName,
         blockbyId: item.senderId,
-      } ).then( () => {
-      remove(ref(db, "friends/" + item.friendId));
-      } )
+      }).then(() => {
+        remove(ref(db, "friends/" + item.friendId));
+      });
     } else {
-        set(push(ref(db, "block")), {
-          block: item.senderName,
-          blockId: item.senderId,
-          blockby: item.receiverName,
-          blockbyId: item.receiverId,
-        }).then(() => {
-          remove(ref(db, "friends/" + item.friendId));
-        });
+      set(push(ref(db, "block")), {
+        block: item.senderName,
+        blockId: item.senderId,
+        blockby: item.receiverName,
+        blockbyId: item.receiverId,
+      }).then(() => {
+        remove(ref(db, "friends/" + item.friendId));
+      });
+    }
+  };
+  let handleAllFriends = ( item ) => {
+    let receiverFriends = {
+      status: "single",
+      id: item.receiverId,
+      name: item.receiverName,
+    };
+    let senderFriends = {
+      status: "single",
+      id: item.senderId,
+      name: item.senderName,
+    };
+    if (item.senderId == data.uid) {
+      localStorage.setItem("activeChatUser", JSON.stringify(receiverFriends));
+      dispatch( activeFriends( receiverFriends ) );
+    } else {
+      localStorage.setItem("activeChatUser", JSON.stringify(senderFriends));
+      dispatch(activeFriends(senderFriends));
     }
   };
   return (
@@ -57,7 +79,10 @@ const Friends = () => {
         <h2 className="font-pop text-xl font-semibold mb-5">Friends</h2>
         <BsThreeDotsVertical className="absolute right-0 text-2xl top-2.5 text-primary" />
         {friend.map((item) => (
-          <div className="flex justify-between mt-5 items-center border-b border-black pb-4">
+          <div
+            onClick={() => handleAllFriends(item)}
+            className="flex justify-between mt-5 items-center border-b border-black pb-4"
+          >
             <div className="w-[80px]">
               <img src="images/friends.png" />
             </div>
@@ -72,13 +97,13 @@ const Friends = () => {
               </p>
             </div>
             <div className="w-[90px]">
-            <button
-              onClick={() => handleBlock(item)}
-              className="font-pop font-semibold text-white bg-primary text-base py-2 w-full rounded-lg"
-            >
-              Block
-            </button>
-          </div>
+              <button
+                onClick={() => handleBlock(item)}
+                className="font-pop font-semibold text-white bg-primary text-base py-2 w-full rounded-lg"
+              >
+                Block
+              </button>
+            </div>
           </div>
         ))}
       </div>
